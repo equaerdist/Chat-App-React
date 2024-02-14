@@ -1,0 +1,16 @@
+.page-enter .btn {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.page-enter-active .btn {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.page-exit .btn {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.page-exit-active .btn {
+  opacity: 0;
+  transform: translateX(100%);
+}

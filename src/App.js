@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import { Suspense, createRef } from "react";
+import "./App.css";
+import "./page.scss";
+import { lazy } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  createBrowserRouter,
+  useOutlet,
+  useLocation,
+  RouterProvider,
+} from "react-router-dom";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
+const ChatPage = lazy(() => import("./components/chatPage/chatPage"));
+const EnterPage = lazy(() => import("./enterPage/EnterPage"));
+const routes = [
+  {
+    path: "/",
+    name: "Home",
+    element: <EnterPage></EnterPage>,
+  },
+  {
+    path: "/chat/:nickname",
+    name: "Chat",
+    element: <ChatPage></ChatPage>,
+  },
+];
+const Wrapper = () => {
+  const outlet = useOutlet();
+  const location = useLocation();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Suspense fallback={<div>LOading...</div>}>
+      <SwitchTransition>
+        <CSSTransition
+          key={location.pathname}
+          timeout={300}
+          classNames="page"
+          unmountOnExit
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          {outlet}
+        </CSSTransition>
+      </SwitchTransition>
+    </Suspense>
   );
+};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Wrapper></Wrapper>,
+    children: routes.map((route) => ({
+      index: route.path === "/",
+      path: route.path === "/" ? undefined : route.path,
+      element: route.element,
+    })),
+  },
+]);
+function App() {
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
 export default App;
